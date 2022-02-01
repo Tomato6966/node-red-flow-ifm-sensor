@@ -7,3 +7,4 @@ To Import:
  - Import
  - Choose File
  - Choose the flows.json
+ - Open as copy or just open
