@@ -1,1 +1,499 @@
-[{"id":"2db333a5.3f681c","type":"tab","label":"Flow 1","disabled":false,"info":""},{"id":"8a21544cd2d7b379","type":"tcp in","z":"2db333a5.3f681c","name":"","server":"client","host":"192.168.18.90","port":"50011","datamode":"stream","datatype":"utf8","newline":"","topic":"","base64":false,"x":210,"y":540,"wires":[["f612d10e11578cce"]]},{"id":"f612d10e11578cce","type":"function","z":"2db333a5.3f681c","name":"","func":"const Data = msg.payload; //Definiere den payload (output) auf eine Variable, welche konstant ist\n\n// Konvertiere es zu einem Array\nconst DataArray = Data.split(\"start\").filter(Boolean);\n\n// Wenn ein Fehler (beim Sensor gibt er \"fail\" aus) vorkommt\nif(DataArray[1].toLowerCase().includes(\"fail\")){\n    // Ändere die \"OUPUT\" Nachricht um, indem die Data, der Output und die ganzen anderen pre-deklarierten Variablen vorkommen.\n    msg = {\n        Output:{ topic: \"Fail\", payload: \"Fail\"},\n        Probability: { topic: \"Probability\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        Models: { topic: \"Models\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        Objects: { topic: \"Objects\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        CordX: { topic: \"CordX\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        CordY: { topic: \"CordY\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        Degree: { topic: \"Degree\", payload: 0} //0 da ein fehler ist und im dashboard 0 soll stehen\n    };\n   }\nelse {\n    const Success = DataArray[1].slice(4).replace(\"stop\", \"\").split(\"#\").filter(Boolean).map(d => Number(d));\n    const [ Probability, Models, Objects, CordX, CordY, Degree ] = Success;\n    msg = {\n        Data: { topic: \"Data\", payload: Data},\n        Output: { topic: \"Success\", payload: \"Success\"},\n        Probability: { topic: \"Probability\", payload: Probability},\n        Models: { topic: \"Models\", payload: Models},\n        Objects: { topic: \"Objects\", payload: Objects},\n        CordX: { topic: \"CordX\", payload: CordX},\n        CordY: { topic: \"CordY\", payload: CordY},\n        Degree: { topic: \"Degree\", payload: Degree}\n    };\n}\nmsg.Data = { topic: \"Data\", payload: msg};\nreturn [msg.Output, msg.Probability, msg.Model, msg.Objects, msg.CordX, msg.CordY, msg.Degree, msg.Data];\n// (c) Pregler https://tomato6966.xyz/MIT","outputs":8,"noerr":0,"initialize":"","finalize":"","libs":[],"x":680,"y":680,"wires":[["78279a67fbb4e2d7","4519e91ed6895f0f"],["ca727a668b11efc5","e8cce4c345128403"],[],[],["cbb55a20bb47fa33","a8c0957ae43a7d58"],["b01bfcca1c0afa47","cab6120f4fd98cc1"],["c1f590a0430896d7","4eaa070186a537c8"],["32e71698096ece5f"]]},{"id":"ca727a668b11efc5","type":"ui_gauge","z":"2db333a5.3f681c","name":"Probability","group":"de89b327.569e","order":0,"width":0,"height":0,"gtype":"gage","title":"Probability","label":"%","format":"{{value}}","min":0,"max":"100","colors":["#b30000","#e6e600","#00ff40"],"seg1":"60","seg2":"80","x":920,"y":640,"wires":[]},{"id":"78279a67fbb4e2d7","type":"ui_text","z":"2db333a5.3f681c","group":"de89b327.569e","order":1,"width":0,"height":0,"name":"","label":"Erkannt: ","format":"{{msg.payload}}","layout":"row-spread","x":920,"y":580,"wires":[]},{"id":"cbb55a20bb47fa33","type":"ui_text","z":"2db333a5.3f681c","group":"de89b327.569e","order":2,"width":"0","height":"0","name":"CordX","label":"CordX","format":"{{msg.payload}}","layout":"row-spread","x":930,"y":700,"wires":[]},{"id":"b01bfcca1c0afa47","type":"ui_text","z":"2db333a5.3f681c","group":"de89b327.569e","order":3,"width":"0","height":"0","name":"CordY","label":"CordY","format":"{{msg.payload}}","layout":"row-spread","x":930,"y":760,"wires":[]},{"id":"c1f590a0430896d7","type":"ui_text","z":"2db333a5.3f681c","group":"de89b327.569e","order":3,"width":0,"height":0,"name":"Degree","label":"Degree","format":"{{msg.payload}}","layout":"row-spread","x":920,"y":820,"wires":[]},{"id":"32e71698096ece5f","type":"debug","z":"2db333a5.3f681c","name":"","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":870,"y":920,"wires":[]},{"id":"e8cce4c345128403","type":"mqtt out","z":"2db333a5.3f681c","name":"","topic":"O2D_220/Probability","qos":"0","retain":"","respTopic":"","contentType":"","userProps":"","correl":"","expiry":"","broker":"3d32600c.c785b","x":1110,"y":640,"wires":[]},{"id":"8012a949ae051f48","type":"mqtt in","z":"2db333a5.3f681c","name":"","topic":"O2D_220/Output","qos":"0","datatype":"auto","broker":"3d32600c.c785b","nl":false,"rap":true,"rh":0,"inputs":0,"x":280,"y":780,"wires":[["cebd598bec9586ce"]]},{"id":"cebd598bec9586ce","type":"debug","z":"2db333a5.3f681c","name":"","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":460,"y":780,"wires":[]},{"id":"a8c0957ae43a7d58","type":"mqtt out","z":"2db333a5.3f681c","name":"","topic":"O2D_220/CordX","qos":"0","retain":"","respTopic":"","contentType":"","userProps":"","correl":"","expiry":"","broker":"3d32600c.c785b","x":1100,"y":700,"wires":[]},{"id":"cab6120f4fd98cc1","type":"mqtt out","z":"2db333a5.3f681c","name":"","topic":"O2D_220/CordY","qos":"0","retain":"","respTopic":"","contentType":"","userProps":"","correl":"","expiry":"","broker":"3d32600c.c785b","x":1100,"y":760,"wires":[]},{"id":"4eaa070186a537c8","type":"mqtt out","z":"2db333a5.3f681c","name":"","topic":"O2D_220/Degree","qos":"0","retain":"","respTopic":"","contentType":"","userProps":"","correl":"","expiry":"","broker":"3d32600c.c785b","x":1110,"y":820,"wires":[]},{"id":"4519e91ed6895f0f","type":"mqtt out","z":"2db333a5.3f681c","name":"","topic":"O2D_220/Output","qos":"0","retain":"","respTopic":"","contentType":"","userProps":"","correl":"","expiry":"","broker":"3d32600c.c785b","x":1100,"y":580,"wires":[]},{"id":"0145e7c2a1433a7c","type":"mqtt in","z":"2db333a5.3f681c","name":"","topic":"O2D_220/Probability","qos":"0","datatype":"auto","broker":"3d32600c.c785b","nl":false,"rap":true,"rh":0,"inputs":0,"x":290,"y":840,"wires":[["a204857450ad97bb"]]},{"id":"a204857450ad97bb","type":"debug","z":"2db333a5.3f681c","name":"","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":460,"y":840,"wires":[]},{"id":"b561712101a3c3dc","type":"mqtt in","z":"2db333a5.3f681c","name":"","topic":"O2D_220/CordX","qos":"0","datatype":"auto","broker":"3d32600c.c785b","nl":false,"rap":true,"rh":0,"inputs":0,"x":280,"y":900,"wires":[["330fb1ee6a33588d"]]},{"id":"330fb1ee6a33588d","type":"debug","z":"2db333a5.3f681c","name":"","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":460,"y":900,"wires":[]},{"id":"29bef13c3940d3dd","type":"mqtt in","z":"2db333a5.3f681c","name":"","topic":"O2D_220/CordY","qos":"0","datatype":"auto","broker":"3d32600c.c785b","nl":false,"rap":true,"rh":0,"inputs":0,"x":280,"y":960,"wires":[["4b3ee32f848afbf3"]]},{"id":"4b3ee32f848afbf3","type":"debug","z":"2db333a5.3f681c","name":"","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":460,"y":960,"wires":[]},{"id":"2aa05efd19d4811e","type":"mqtt in","z":"2db333a5.3f681c","name":"","topic":"O2D_220/Degree","qos":"0","datatype":"auto","broker":"3d32600c.c785b","nl":false,"rap":true,"rh":0,"inputs":0,"x":280,"y":1020,"wires":[["7359fb5d97627fdc"]]},{"id":"7359fb5d97627fdc","type":"debug","z":"2db333a5.3f681c","name":"","active":false,"tosidebar":true,"console":false,"tostatus":false,"complete":"false","statusVal":"","statusType":"auto","x":460,"y":1020,"wires":[]},{"id":"de89b327.569e","type":"ui_group","name":"Standard","tab":"231de43f.ebaacc","order":1,"disp":true,"width":"6","collapse":false},{"id":"3d32600c.c785b","type":"mqtt-broker","name":"","broker":"192.168.1.100","port":"1883","clientid":"","usetls":false,"compatmode":true,"keepalive":"60","cleansession":true,"birthTopic":"","birthQos":"0","birthPayload":"","closeTopic":"","closeQos":"0","closePayload":"","willTopic":"","willQos":"0","willPayload":""},{"id":"231de43f.ebaacc","type":"ui_tab","name":"Home","icon":"dashboard","disabled":false,"hidden":false}]
+[
+    {
+        "id": "2db333a5.3f681c",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "8a21544cd2d7b379",
+        "type": "tcp in",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "server": "client",
+        "host": "192.168.18.90",
+        "port": "50011",
+        "datamode": "stream",
+        "datatype": "utf8",
+        "newline": "",
+        "topic": "",
+        "base64": false,
+        "x": 210,
+        "y": 540,
+        "wires":
+        [
+            [
+                "f612d10e11578cce"
+            ]
+        ]
+    },
+    {
+        "id": "f612d10e11578cce",
+        "type": "function",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "func": "const Data = msg.payload; //Definiere den payload (output) auf eine Variable, welche konstant ist\n\n// Konvertiere es zu einem Array\nconst DataArray = Data.split(\"start\").filter(Boolean);\n\n// Wenn ein Fehler (beim Sensor gibt er \"fail\" aus) vorkommt\nif(DataArray[1].toLowerCase().includes(\"fail\")){\n    // Ändere die \"OUPUT\" Nachricht um, indem die Data, der Output und die ganzen anderen pre-deklarierten Variablen vorkommen.\n    msg = {\n        Output:{ topic: \"Fail\", payload: \"Fail\"},\n        Probability: { topic: \"Probability\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        Models: { topic: \"Models\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        Objects: { topic: \"Objects\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        CordX: { topic: \"CordX\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        CordY: { topic: \"CordY\", payload: 0}, //0 da ein fehler ist und im dashboard 0 soll stehen\n        Degree: { topic: \"Degree\", payload: 0} //0 da ein fehler ist und im dashboard 0 soll stehen\n    };\n   }\nelse {\n    const Success = DataArray[1].slice(4).replace(\"stop\", \"\").split(\"#\").filter(Boolean).map(d => Number(d));\n    const [ Probability, Models, Objects, CordX, CordY, Degree ] = Success;\n    msg = {\n        Data: { topic: \"Data\", payload: Data},\n        Output: { topic: \"Success\", payload: \"Success\"},\n        Probability: { topic: \"Probability\", payload: Probability},\n        Models: { topic: \"Models\", payload: Models},\n        Objects: { topic: \"Objects\", payload: Objects},\n        CordX: { topic: \"CordX\", payload: CordX},\n        CordY: { topic: \"CordY\", payload: CordY},\n        Degree: { topic: \"Degree\", payload: Degree}\n    };\n}\nmsg.Data = { topic: \"Data\", payload: msg};\nreturn [msg.Output, msg.Probability, msg.Model, msg.Objects, msg.CordX, msg.CordY, msg.Degree, msg.Data];\n// (c) Pregler https://tomato6966.xyz/MIT",
+        "outputs": 8,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 680,
+        "wires":
+        [
+            [
+                "78279a67fbb4e2d7",
+                "4519e91ed6895f0f"
+            ],
+            [
+                "ca727a668b11efc5",
+                "e8cce4c345128403"
+            ],
+            [],
+            [],
+            [
+                "cbb55a20bb47fa33",
+                "a8c0957ae43a7d58"
+            ],
+            [
+                "b01bfcca1c0afa47",
+                "cab6120f4fd98cc1"
+            ],
+            [
+                "c1f590a0430896d7",
+                "4eaa070186a537c8"
+            ],
+            [
+                "32e71698096ece5f"
+            ]
+        ]
+    },
+    {
+        "id": "ca727a668b11efc5",
+        "type": "ui_gauge",
+        "z": "2db333a5.3f681c",
+        "name": "Probability",
+        "group": "de89b327.569e",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Probability",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors":
+        [
+            "#b30000",
+            "#e6e600",
+            "#00ff40"
+        ],
+        "seg1": "60",
+        "seg2": "80",
+        "x": 920,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "78279a67fbb4e2d7",
+        "type": "ui_text",
+        "z": "2db333a5.3f681c",
+        "group": "de89b327.569e",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "Erkannt: ",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 920,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "cbb55a20bb47fa33",
+        "type": "ui_text",
+        "z": "2db333a5.3f681c",
+        "group": "de89b327.569e",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "name": "CordX",
+        "label": "CordX",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 930,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "b01bfcca1c0afa47",
+        "type": "ui_text",
+        "z": "2db333a5.3f681c",
+        "group": "de89b327.569e",
+        "order": 3,
+        "width": "0",
+        "height": "0",
+        "name": "CordY",
+        "label": "CordY",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 930,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "c1f590a0430896d7",
+        "type": "ui_text",
+        "z": "2db333a5.3f681c",
+        "group": "de89b327.569e",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "name": "Degree",
+        "label": "Degree",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 920,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "32e71698096ece5f",
+        "type": "debug",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 870,
+        "y": 920,
+        "wires": []
+    },
+    {
+        "id": "e8cce4c345128403",
+        "type": "mqtt out",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/Probability",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3d32600c.c785b",
+        "x": 1110,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "8012a949ae051f48",
+        "type": "mqtt in",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/Output",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "3d32600c.c785b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 280,
+        "y": 780,
+        "wires":
+        [
+            [
+                "cebd598bec9586ce"
+            ]
+        ]
+    },
+    {
+        "id": "cebd598bec9586ce",
+        "type": "debug",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "a8c0957ae43a7d58",
+        "type": "mqtt out",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/CordX",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3d32600c.c785b",
+        "x": 1100,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "cab6120f4fd98cc1",
+        "type": "mqtt out",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/CordY",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3d32600c.c785b",
+        "x": 1100,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "4eaa070186a537c8",
+        "type": "mqtt out",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/Degree",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3d32600c.c785b",
+        "x": 1110,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "4519e91ed6895f0f",
+        "type": "mqtt out",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/Output",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "3d32600c.c785b",
+        "x": 1100,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "0145e7c2a1433a7c",
+        "type": "mqtt in",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/Probability",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "3d32600c.c785b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 290,
+        "y": 840,
+        "wires":
+        [
+            [
+                "a204857450ad97bb"
+            ]
+        ]
+    },
+    {
+        "id": "a204857450ad97bb",
+        "type": "debug",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "b561712101a3c3dc",
+        "type": "mqtt in",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/CordX",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "3d32600c.c785b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 280,
+        "y": 900,
+        "wires":
+        [
+            [
+                "330fb1ee6a33588d"
+            ]
+        ]
+    },
+    {
+        "id": "330fb1ee6a33588d",
+        "type": "debug",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 900,
+        "wires": []
+    },
+    {
+        "id": "29bef13c3940d3dd",
+        "type": "mqtt in",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/CordY",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "3d32600c.c785b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 280,
+        "y": 960,
+        "wires":
+        [
+            [
+                "4b3ee32f848afbf3"
+            ]
+        ]
+    },
+    {
+        "id": "4b3ee32f848afbf3",
+        "type": "debug",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "2aa05efd19d4811e",
+        "type": "mqtt in",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "topic": "O2D_220/Degree",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "3d32600c.c785b",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 280,
+        "y": 1020,
+        "wires":
+        [
+            [
+                "7359fb5d97627fdc"
+            ]
+        ]
+    },
+    {
+        "id": "7359fb5d97627fdc",
+        "type": "debug",
+        "z": "2db333a5.3f681c",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 460,
+        "y": 1020,
+        "wires": []
+    },
+    {
+        "id": "de89b327.569e",
+        "type": "ui_group",
+        "name": "Standard",
+        "tab": "231de43f.ebaacc",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "3d32600c.c785b",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "192.168.1.100",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "231de43f.ebaacc",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
