@@ -1,0 +1,1 @@
+[{"id":"fb46dd2d2b5b699c","type":"change","z":"2db333a5.3f681c","name":"Nicht erkannt","rules":[{"t":"set","p":"erkannt","pt":"msg","to":"keine Münze vorhanden","tot":"str"}],"action":"","property":"","from":"","to":"","reg":false,"x":1090,"y":640,"wires":[["3f6ea8c011825cb1"]]}]
